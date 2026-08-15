@@ -39,15 +39,34 @@ only when the agent is **stuck, failed, or asking you something**.
 
 ## Install
 
+**As a plugin (recommended):**
+
+```
+/plugin marketplace add absep98/earshot
+/plugin install earshot@earshot
+```
+
+Claude Code fetches the plugin, installs its one optional dependency
+automatically, and wires up the hooks — no manual editing of
+`~/.claude/settings.json`. Restart Claude Code (or `/reload-plugins`)
+afterwards.
+
+**From a clone, without the plugin system:**
+
 ```bash
+git clone https://github.com/absep98/earshot
+cd earshot/plugins/earshot
 npm install
 node bin/earshot.js install
 ```
 
 That backs up `~/.claude/settings.json`, registers the `Stop` and `Notification`
-hooks, and writes nothing else. Restart Claude Code afterwards.
+hooks, and writes nothing else. Use this *or* the plugin install — not both,
+or responses get narrated twice.
 
 ## Try it without installing anything
+
+From `earshot/plugins/earshot/` in a clone (see above):
 
 ```bash
 node bin/earshot.js preview < some-response.md

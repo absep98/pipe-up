@@ -1,0 +1,18 @@
+{
+  "name": "earshot",
+  "owner": {
+    "name": "Abhishek Sharma",
+    "url": "https://github.com/absep98"
+  },
+  "plugins": [
+    {
+      "name": "earshot",
+      "source": "./plugins/earshot",
+      "description": "Hear what your coding agent did, without reading it. Narrates Claude Code responses — silent by default except on questions, failures and blockers.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Abhishek Sharma"
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "earshot",
+  "description": "Hear what your coding agent did, without reading it. Narrates Claude Code responses — stripped of code/diffs/markdown, silent by default except on questions, failures and blockers.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Abhishek Sharma",
+    "url": "https://github.com/absep98"
+  },
+  "homepage": "https://github.com/absep98/earshot",
+  "repository": "https://github.com/absep98/earshot",
+  "license": "MIT"
+}

@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert');
-const { toSpokenText, shouldSpeak, humanizeIdentifier, humanizePath } = require('../src/filter');
+const { toSpokenText, shouldSpeak, humanizeIdentifier, humanizePath } = require('../plugins/earshot/src/filter');
 
 test('humanizeIdentifier splits the casings people actually use', () => {
   assert.equal(humanizeIdentifier('user_auth_handler'), 'user auth handler');

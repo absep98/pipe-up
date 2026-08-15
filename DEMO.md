@@ -24,7 +24,7 @@ viewer see the wall: headings, a diff, a table, file paths. No narration yet.
 Run:
 
 ```bash
-node bin/earshot.js say < sample-response.md
+node plugins/earshot/bin/earshot.js say < sample-response.md
 ```
 
 Let the audio play uncut. This is the money shot — the viewer hears 676
@@ -51,7 +51,8 @@ Show two responses back to back in a live session:
 **0:26–0:30 — install**
 
 ```bash
-node bin/earshot.js install
+/plugin marketplace add absep98/earshot
+/plugin install earshot@earshot
 ```
 
 End card: repo URL. Nothing else.
