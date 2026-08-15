@@ -64,6 +64,71 @@ That backs up `~/.claude/settings.json`, registers the `Stop` and `Notification`
 hooks, and writes nothing else. Use this *or* the plugin install — not both,
 or responses get narrated twice.
 
+## After installing: what actually happens
+
+Nothing you need to type. Once installed, `earshot` runs automatically in the
+background every time Claude Code finishes responding — there is no command to
+run, no button to press. You just keep using Claude Code normally.
+
+**In `smart` mode (the default), most responses will be silent.** That's
+correct behavior, not a bug: it only speaks when Claude asks you something, is
+blocked, or has failed at something. A plain "done, tests pass" response stays
+quiet on purpose — see [why](#and-by-default-it-says-nothing-at-all) above.
+
+To hear it in action right away, ask Claude Code something that forces a
+question back to you (e.g. *"pick a file and ask me whether I want it
+renamed"*) — you should hear that question spoken aloud a moment after it
+appears.
+
+### Changing the mode
+
+Open (or create) `~/.earshot.json` and set `mode` to one of three values:
+
+```json
+{ "mode": "smart" }
+```
+
+| Value | What you'll hear |
+|---|---|
+| `"smart"` | Only questions, blockers, failures. Silent on routine progress. **Default.** |
+| `"always"` | Every single response, narrated. Good for a first test; noisy for daily use. |
+| `"off"` | Nothing from responses. Permission/idle alerts still speak — set `"alerts": false` too if you want total silence. |
+
+No restart needed for a mode change — each response reads the file fresh.
+
+### Other settings you can tune in the same file
+
+```json
+{
+  "mode": "smart",
+  "rate": 2,
+  "maxWords": 60,
+  "alerts": true
+}
+```
+
+- `rate` — speech speed, `-10` (slowest) to `10` (fastest), default `2`.
+- `maxWords` — how long a spoken summary can get before it's cut off.
+- `alerts` — whether the `Notification` hook (permission prompts, "Claude is idle") speaks at all.
+
+### Turning it off entirely
+
+Set `"mode": "off"` in `~/.earshot.json`, or uninstall the plugin with
+`/plugin uninstall earshot@earshot`.
+
+### If something sounds wrong
+
+Run this from `earshot/plugins/earshot/` in a clone to see exactly what would
+be spoken for a given response, without any audio:
+
+```bash
+node bin/earshot.js preview < some-response.md
+```
+
+It prints the current mode, whether it would speak, and the exact text — the
+fastest way to tell "the filter did something odd" from "the hook isn't
+firing."
+
 ## Try it without installing anything
 
 From `earshot/plugins/earshot/` in a clone (see above):
