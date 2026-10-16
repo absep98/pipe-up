@@ -1,204 +1,132 @@
-# earshot
+# Earshot
 
 **Hear what your coding agent did, without reading it.**
 
-Claude Code sessions produce 50,000–100,000 characters of text a day. Most of it
-is diffs, file paths, tool chatter and markdown scaffolding. Existing TTS hooks
-read all of it aloud, which is slower than reading it with your eyes.
+Earshot is a Claude Code plugin that speaks up when Claude needs you, and only
+then. It stays silent while Claude works, and says the one thing you need to hear:
+the question it is asking, or the failure it hit. With several sessions open, it
+tells you **which one** needs you. It runs entirely on your machine, using your
+computer's own voice.
 
-earshot doesn't read your agent's output. It tells you what happened.
+> "Which database should I use for the audit log: Postgres, or a separate store?"
 
-```
-Claude's response (676 chars)          earshot says (12 seconds)
-─────────────────────────────          ─────────────────────────
-## What changed                        "I've fixed the token refresh bug in
-- The `refreshToken()` call was         token store. The refresh Token call
-  firing **before** the mutex...        was firing before the mutex was
-```typescript                           acquired, so two concurrent requests
-async function refresh(store) {         could both see an expired token.
-  const release = await store...        All 51 tests pass now. There's a code
-```                                     block of TypeScript, 7 lines you'll
-| Test | Before | After |               want to look at."
-```
+> "Problem: The integration suite failed on the staging fixtures with a connection
+> timeout. I could not reproduce it locally, so I stopped here."
 
-## And by default, it says nothing at all
-
-The two peer-reviewed studies of blind and low-vision developers using AI coding
-tools both found the same thing: the problem is **auditory overload**, not
-silence. People already running a screen reader do not want a second voice
-reading the same output again.
-
-So `smart` mode — the default — stays quiet through routine progress and speaks
-only when the agent is **stuck, failed, or asking you something**.
-
-| Mode | Behaviour |
-|---|---|
-| `smart` *(default)* | Speaks on questions, failures, blockers. Silent otherwise. |
-| `always` | Narrates every response. |
-| `off` | Silent. Permission and idle alerts still fire. |
+> "waypoint needs permission."
 
 ## Install
-
-**As a plugin (recommended):**
 
 ```
 /plugin marketplace add absep98/earshot
 /plugin install earshot@earshot
 ```
 
-Claude Code fetches the plugin, installs its one optional dependency
-automatically, and wires up the hooks — no manual editing of
-`~/.claude/settings.json`. Restart Claude Code (or `/reload-plugins`)
-afterwards.
+Then run `/reload-plugins` (or restart Claude Code) and check it works:
 
-**From a clone, without the plugin system:**
-
-```bash
-git clone https://github.com/absep98/earshot
-cd earshot/plugins/earshot
-npm install
-node bin/earshot.js install
+```
+/earshot:doctor
 ```
 
-That backs up `~/.claude/settings.json`, registers the `Stop` and `Notification`
-hooks, and writes nothing else. Use this *or* the plugin install — not both,
-or responses get narrated twice.
+That tests the speech path, shows your settings, and lists the last decisions, so
+"why was it silent?" always has an answer.
 
-## After installing: what actually happens
+## What it does
 
-Nothing you need to type. Once installed, `earshot` runs automatically in the
-background every time Claude Code finishes responding — there is no command to
-run, no button to press. You just keep using Claude Code normally.
-
-**In `smart` mode (the default), most responses will be silent.** That's
-correct behavior, not a bug: it only speaks when Claude asks you something, is
-blocked, or has failed at something. A plain "done, tests pass" response stays
-quiet on purpose — see [why](#and-by-default-it-says-nothing-at-all) above.
-
-To hear it in action right away, ask Claude Code something that forces a
-question back to you (e.g. *"pick a file and ask me whether I want it
-renamed"*) — you should hear that question spoken aloud a moment after it
-appears.
-
-### Changing the mode
-
-Open (or create) `~/.earshot.json` and set `mode` to one of three values:
-
-```json
-{ "mode": "smart" }
-```
-
-| Value | What you'll hear |
+| | |
 |---|---|
-| `"smart"` | Only questions, blockers, failures. Silent on routine progress. **Default.** |
-| `"always"` | Every single response, narrated. Good for a first test; noisy for daily use. |
-| `"off"` | Nothing from responses. Permission/idle alerts still speak — set `"alerts": false` too if you want total silence. |
+| **Stays quiet by default** | Routine progress ("done, tests pass") makes no sound. |
+| **Speaks a question** | A question for you is spoken with its options, not the start of the response. |
+| **Speaks a failure** | The sentence that reports it, prefixed "Problem:". Fixed failures and negations ("no failures") are ignored. |
+| **Skips optional offers** | "Want me to commit this?" is not worth an interruption. |
+| **Announces alerts** | Permission prompts and "waiting for you", in your system voice, never dropped. |
+| **Names the session** | With 2+ sessions open: "earshot needs permission." |
 
-No restart needed for a mode change — each response reads the file fresh.
+It does this by reading Claude's reply through Claude Code's `Stop` hook and its
+alerts through the `Notification` hook. It never changes what Claude sees or does.
 
-### Other settings you can tune in the same file
+## Modes
 
-```json
-{
-  "mode": "smart",
-  "rate": 2,
-  "maxWords": 60,
-  "alerts": true
-}
+Switch with a command, or edit `~/.earshot.json`:
+
+| Command | Mode | What you hear |
+|---|---|---|
+| `/earshot:smart` | `smart` (default) | Only questions, failures and blockers |
+| `/earshot:always` | `always` | A short summary of every response |
+| `/earshot:off` | `off` | Nothing from responses. Alerts still speak unless `"alerts": false` |
+
+`/earshot:silence` stops whatever is speaking right now.
+
+## Several sessions at once
+
+Each session is named after its project folder. Names appear only once two or more
+sessions have been active recently, so with one session it keeps the plain wording
+("Claude needs permission to continue").
+
+- Two sessions in one folder are numbered: "earshot 1", "earshot 2".
+- Speech queues in order, so one session's alert never interrupts another's. The
+  one exception: a newer narration from a session replaces that same session's
+  older, now stale, one.
+- "Waiting for you" notices are spoken only when several sessions are open, since
+  with one session you are already looking at it.
+
+## Settings
+
+All optional, in `~/.earshot.json`. Mistakes are tolerated and explained by
+`/earshot:doctor`: values are trimmed and case-insensitive, out-of-range numbers
+are clamped, and unknown keys are reported.
+
+| Setting | Values | Default |
+|---|---|---|
+| `mode` | `"smart"`, `"always"`, `"off"` | `"smart"` |
+| `smartStyle` | `"precise"` says just the question or failure; `"summary"` says a short summary of the whole response, still only when there is one | `"precise"` |
+| `label` | `"auto"` name sessions only when 2+ are active, `"always"`, `"never"` | `"auto"` |
+| `idleAlerts` | `"auto"` only when 2+ are active, `"always"`, `"never"` | `"auto"` |
+| `alerts` | `true` / `false` | `true` |
+| `rate` | -10 (slowest) to 10 (fastest) | `2` |
+| `voice` | an installed voice name | system default |
+| `maxWords` | how long a spoken summary can be | `60` |
+| `describeCode` | announce "a code block of TypeScript, 7 lines" | `true` |
+| `sessionWindowMinutes` | how recently a session must have been active to count | `120` |
+
+## Privacy
+
+**Nothing leaves your machine.** Earshot contains no network code, no analytics,
+no accounts and no API keys, and it makes no calls to any language model. Speech
+uses only the voice built into your operating system. The full policy is in
+[PRIVACY.md](PRIVACY.md).
+
+## Commands from a terminal
+
+The same tool works outside Claude Code, from a clone of this repository:
+
+```
+node scripts/earshot.js doctor --speak
+node scripts/earshot.js preview < some-response.md
+node scripts/earshot.js mode off
+node scripts/earshot.js sessions
+node scripts/earshot.js log 20
 ```
 
-- `rate` — speech speed, `-10` (slowest) to `10` (fastest), default `2`.
-- `maxWords` — how long a spoken summary can get before it's cut off.
-- `alerts` — whether the `Notification` hook (permission prompts, "Claude is idle") speaks at all.
+`preview` prints exactly what would be spoken, and whether it would speak at all,
+without making a sound.
 
-### Turning it off entirely
+## Platform support
 
-Set `"mode": "off"` in `~/.earshot.json`, or uninstall the plugin with
-`/plugin uninstall earshot@earshot`.
+Developed and tested on **Windows 11** (the built-in SAPI voices). The macOS code
+path (`say`) and the Linux one (`spd-say` or `espeak-ng`) exist but are **untested**.
+The plugin needs Node.js, which Claude Code's hooks already rely on.
 
-### If something sounds wrong
+## How well does "smart" work?
 
-Run this from `earshot/plugins/earshot/` in a clone to see exactly what would
-be spoken for a given response, without any audio:
+It is rule-based, so it is imperfect. It was measured on 138 labelled responses
+written by independent reviewers. The first measurement on a set the rules had never
+seen was 84% correct, against 56% for the previous version; after fixing the misses it
+passes all of them, which no longer says how it will do on new text. Expect it to
+miss unusual phrasing. `/earshot:always` is there if you would rather hear everything,
+and `/earshot:doctor` shows what it decided and why. The labelled responses and the
+test that guards them are in `test/`.
 
-```bash
-node bin/earshot.js preview < some-response.md
-```
+## License
 
-It prints the current mode, whether it would speak, and the exact text — the
-fastest way to tell "the filter did something odd" from "the hook isn't
-firing."
-
-## Try it without installing anything
-
-From `earshot/plugins/earshot/` in a clone (see above):
-
-```bash
-node bin/earshot.js preview < some-response.md
-```
-
-`preview` prints exactly what would be spoken — and whether it would speak at
-all — without making a sound.
-
-```bash
-node bin/earshot.js say "Fixed the auth bug in src/auth/token_store.ts"
-```
-
-## Configuration
-
-Optional, at `~/.earshot.json`:
-
-```json
-{
-  "mode": "smart",
-  "engine": "edge",
-  "edgeVoice": "en-US-AriaNeural",
-  "rate": 2,
-  "maxWords": 60,
-  "alerts": true
-}
-```
-
-`engine: "edge"` uses Microsoft's neural voices (400+, free, needs network) and
-falls back to the built-in OS voice automatically if the network or the
-`node-edge-tts` package is unavailable. Everything runs locally otherwise — no
-account, no API key, no telemetry.
-
-## What it does to the text
-
-- Code blocks and diffs are **described, not recited** — "a code block of TypeScript, 7 lines"
-- Tables are announced, not read cell by cell
-- `src/auth/token_store.ts` becomes "token store"; `getUserById` becomes "get User By Id"
-- Markdown, emoji, bullets and link URLs are stripped; link text survives
-- Soft-wrapped lines are rejoined so the voice doesn't pause mid-clause
-- Leading filler ("Sure!", "Great!") is dropped
-- Capped at 60 words, trimmed at a sentence boundary
-
-## Design notes
-
-**It never blocks your terminal.** The hook filters the text, hands it to a
-detached player process and exits in under half a second. Audio plays in the
-background.
-
-**A new response interrupts the old one.** Stale narration is worse than none,
-so `enqueue` kills the current player before starting the next.
-
-**It cannot break your session.** Every hook path catches everything and exits
-0. Exit code 2 would block Claude from stopping, so earshot never returns it.
-
-**No LLM in the default path.** Summarisation is rules-based, which means no API
-key, no per-response cost, no network dependency, and no setup step between
-installing and hearing it work. An opt-in LLM summariser is the obvious next
-increment, not the starting point.
-
-## Status
-
-v0.1. Windows-first (SAPI + PowerShell playback); macOS uses `say`/`afplay`,
-Linux needs `ffplay`. Claude Code only — the `Stop` hook contract is
-Claude-Code-specific.
-
-Not yet built: per-block selection ("read me the diff"), which needs UI the CLI
-doesn't expose, and cross-CLI support, which needs a hosted-terminal
-architecture. Both are deliberately deferred.
-
-MIT.
+[MIT](LICENSE). Security reports: see [SECURITY.md](SECURITY.md).

@@ -1,5 +1,6 @@
 {
   "name": "earshot",
+  "description": "Earshot: hear when Claude Code needs you. Speaks questions, failures and alerts aloud, and names which session needs you. Fully offline.",
   "owner": {
     "name": "Abhishek Sharma",
     "url": "https://github.com/absep98"
@@ -7,9 +8,9 @@
   "plugins": [
     {
       "name": "earshot",
-      "source": "./plugins/earshot",
-      "description": "Hear what your coding agent did, without reading it. Narrates Claude Code responses — silent by default except on questions, failures and blockers.",
-      "version": "0.1.0",
+      "source": "./",
+      "description": "Hear what your coding agent did, without reading it. Speaks only when Claude asks you something or gets stuck, and names which session needs you.",
+      "version": "0.3.0",
       "author": {
         "name": "Abhishek Sharma"
       }

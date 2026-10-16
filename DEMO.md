@@ -1,78 +1,68 @@
 # 30-second demo script
 
-For an audio product the demo *is* the pitch, and none of the eight competing
-Claude Code TTS projects have a good one. This is the highest-leverage 30
+For an audio product the demo *is* the pitch. This is the highest-leverage 30
 minutes in the whole project.
 
 **Record:** screen + system audio. OBS (free) or ShareX on Windows. Export MP4.
-**Critical:** system audio must be captured, not the microphone. Test this first
-— a silent demo of an audio product is the one unrecoverable mistake.
+**Critical:** capture system audio, not the microphone, and test that first. A
+silent demo of an audio product is the one unrecoverable mistake.
+
+The story in one line: *Claude works silently, then tells you the one thing you need
+to hear, and which session it came from.*
 
 ---
 
+## Setup (before recording)
+
+- Two terminals side by side, each running Claude Code in a different project folder
+  (for example `waypoint` and `billing-api`). Earshot installed, mode `smart`.
+- Run `/earshot:doctor` once off-camera to confirm you can hear it.
+
 ## Shot list
 
-**0:00–0:04 — the problem, shown not told**
+**0:00–0:05 — silence is the feature**
 
-Terminal with a finished Claude Code response on screen. Scroll it. Let the
-viewer see the wall: headings, a diff, a table, file paths. No narration yet.
+Terminal A: ask Claude for a routine change. It finishes with a plain "done, all tests
+pass". **Nothing is heard.** Hold the silence for a full two seconds and let the
+viewer notice.
 
-> On-screen caption: *"Every response. All day."*
+> Caption: *"No wall of noise."*
 
-**0:04–0:10 — the same response, heard**
+**0:05–0:13 — it speaks only for you**
 
-Run:
+Terminal A: ask something that makes Claude ask back, such as *"pick any file and
+ask me which one to rename"*. When the question appears, you hear it, the question
+itself and not the response around it.
 
-```bash
-node plugins/earshot/bin/earshot.js say < sample-response.md
+> Caption: *"It says the one thing you need."*
+
+**0:13–0:23 — which session?**
+
+Terminal B: start a task that needs a permission prompt, then look away from it. You
+hear *"billing api needs permission."* Cut to terminal B showing the prompt.
+
+> Caption: *"Two sessions. It tells you which one."*
+
+**0:23–0:30 — install**
+
 ```
-
-Let the audio play uncut. This is the money shot — the viewer hears 676
-characters become twelve seconds. Do not talk over it.
-
-**0:10–0:18 — the differentiator**
-
-Split screen or cut: the raw response beside the spoken line. Highlight what got
-dropped as the voice reaches it — the code block, the table, `src/auth/token_store.ts`
-becoming "token store".
-
-> On-screen caption: *"It describes the code. It doesn't read it."*
-
-**0:18–0:26 — silence by default**
-
-Show two responses back to back in a live session:
-
-1. A routine one ("all 51 tests pass") — **nothing happens.** Hold the silence
-   for a full two seconds. The silence is the feature; give it room.
-2. A blocked one ("I need an API key") — earshot speaks.
-
-> On-screen caption: *"Speaks when you're needed. Silent when you're not."*
-
-**0:26–0:30 — install**
-
-```bash
 /plugin marketplace add absep98/earshot
 /plugin install earshot@earshot
 ```
 
-End card: repo URL. Nothing else.
+End card: the repo URL. Nothing else.
 
 ---
 
 ## Rules
 
-- **No voiceover.** The product's voice is the only voice.
-- **No music.** It competes with the thing you're demonstrating.
-- **Under 35 seconds.** Every competitor's demo is a 6-minute screencast; being
-  short is itself differentiation.
-- **One take of real terminal.** No slides, no mockups.
+- **No voiceover and no music.** The product's voice is the only voice.
+- **Under 35 seconds.**
+- **One take of a real terminal.** No slides or mockups.
+- Show the silence honestly. If a take has it speak when it should not, record
+  another, or fix the rule and say so in the README.
 
 ## Where it goes
 
-r/ClaudeAI · the Claude Code Discord · Show HN · awesome-claude-code · the
-Claude Code plugin marketplace. Same clip everywhere, embedded not linked.
-
-## The one number that matters
-
-200 users in 30 days. Below it, this is a personal tool and the project is done.
-Above 500 with issues filed, reopen the per-block and cross-CLI questions.
+r/ClaudeAI, the Claude Code Discord, Show HN, awesome-claude-code. Same clip
+everywhere, embedded, not linked.
