@@ -1,6 +1,6 @@
 {
-  "name": "earshot",
-  "version": "0.3.1",
+  "name": "pipe-up",
+  "version": "0.4.0",
   "private": true,
   "description": "Hear what your coding agent did, without reading it. A Claude Code plugin.",
   "license": "MIT",

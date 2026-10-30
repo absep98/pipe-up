@@ -1,16 +1,16 @@
 {
-  "name": "earshot",
-  "description": "Earshot: hear when Claude Code needs you. Speaks questions, failures and alerts aloud, and names which session needs you. Fully offline.",
+  "name": "pipe-up",
+  "description": "Pipe Up: hear when Claude Code needs you. Speaks questions, failures and alerts aloud, and names which session needs you. Fully offline.",
   "owner": {
     "name": "Abhishek Sharma",
     "url": "https://github.com/absep98"
   },
   "plugins": [
     {
-      "name": "earshot",
+      "name": "pipe-up",
       "source": "./",
       "description": "Hear what your coding agent did, without reading it. Speaks only when Claude asks you something or gets stuck, and names which session needs you.",
-      "version": "0.3.1",
+      "version": "0.4.0",
       "author": {
         "name": "Abhishek Sharma"
       }

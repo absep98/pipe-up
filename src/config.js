@@ -4,8 +4,18 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-// EARSHOT_CONFIG lets tests and scripts point at a throwaway config file.
-const CONFIG_PATH = process.env.EARSHOT_CONFIG || path.join(os.homedir(), '.earshot.json');
+const { env } = require('./env');
+
+// PIPE_UP_CONFIG lets tests and scripts point at a throwaway config file.
+//
+// The plugin used to be called "earshot" and kept its settings in ~/.earshot.json.
+// If that file exists and the new one does not, keep using it, so nobody loses their
+// settings in the rename. `doctor` points it out. New settings go wherever the file
+// in use lives.
+const NEW_PATH = path.join(os.homedir(), '.pipe-up.json');
+const LEGACY_PATH = path.join(os.homedir(), '.earshot.json');
+const usingLegacy = !env('CONFIG') && !fs.existsSync(NEW_PATH) && fs.existsSync(LEGACY_PATH);
+const CONFIG_PATH = env('CONFIG') || (usingLegacy ? LEGACY_PATH : NEW_PATH);
 
 const DEFAULTS = {
   // "always"  - narrate every response
@@ -66,7 +76,7 @@ const REMOVED = ['engine', 'edgeVoice'];
  * Turn whatever is in the config file into safe settings, and say what was wrong.
  * A typo must never produce the opposite of what the user meant, so values are
  * trimmed and lower-cased, and anything unusable falls back to the default with a
- * warning that `earshot doctor` shows.
+ * warning that `pipe-up doctor` shows.
  */
 function normalize(user) {
   const cfg = { ...DEFAULTS };
@@ -77,32 +87,32 @@ function normalize(user) {
     return { cfg, warnings };
   }
 
-  for (const [key, raw] of Object.entries(user)) {
-    if (REMOVED.includes(key)) {
-      warnings.push(`"${key}" is no longer used: earshot has been offline-only since 0.3.0 and always uses your system voice`);
-    } else if (key in ENUMS) {
+  for (const [name, raw] of Object.entries(user)) {
+    if (REMOVED.includes(name)) {
+      warnings.push(`"${name}" is no longer used: pipe-up has been offline-only since 0.3.0 and always uses your system voice`);
+    } else if (name in ENUMS) {
       const v = typeof raw === 'string' ? raw.trim().toLowerCase() : raw;
-      if (ENUMS[key].includes(v)) cfg[key] = v;
-      else warnings.push(`"${key}" must be one of ${ENUMS[key].join(', ')} (got ${JSON.stringify(raw)}); using "${DEFAULTS[key]}"`);
-    } else if (BOOLEANS.includes(key)) {
+      if (ENUMS[name].includes(v)) cfg[name] = v;
+      else warnings.push(`"${name}" must be one of ${ENUMS[name].join(', ')} (got ${JSON.stringify(raw)}); using "${DEFAULTS[name]}"`);
+    } else if (BOOLEANS.includes(name)) {
       const v = typeof raw === 'string' ? raw.trim().toLowerCase() : raw;
-      if (v === true || v === 'true') cfg[key] = true;
-      else if (v === false || v === 'false') cfg[key] = false;
-      else warnings.push(`"${key}" must be true or false (got ${JSON.stringify(raw)}); using ${DEFAULTS[key]}`);
-    } else if (key in INTEGERS) {
-      const [lo, hi] = INTEGERS[key];
+      if (v === true || v === 'true') cfg[name] = true;
+      else if (v === false || v === 'false') cfg[name] = false;
+      else warnings.push(`"${name}" must be true or false (got ${JSON.stringify(raw)}); using ${DEFAULTS[name]}`);
+    } else if (name in INTEGERS) {
+      const [lo, hi] = INTEGERS[name];
       const n = typeof raw === 'string' && raw.trim() !== '' ? Number(raw) : raw;
       if (typeof n === 'number' && Number.isFinite(n)) {
         const clamped = Math.min(hi, Math.max(lo, Math.round(n)));
-        if (clamped !== n) warnings.push(`"${key}" ${JSON.stringify(raw)} is outside ${lo}..${hi}; using ${clamped}`);
-        cfg[key] = clamped;
+        if (clamped !== n) warnings.push(`"${name}" ${JSON.stringify(raw)} is outside ${lo}..${hi}; using ${clamped}`);
+        cfg[name] = clamped;
       } else {
-        warnings.push(`"${key}" must be a number (got ${JSON.stringify(raw)}); using ${DEFAULTS[key]}`);
+        warnings.push(`"${name}" must be a number (got ${JSON.stringify(raw)}); using ${DEFAULTS[name]}`);
       }
-    } else if (key === 'voice') {
+    } else if (name === 'voice') {
       cfg.voice = typeof raw === 'string' ? raw.replace(/[\u0000-\u001f]/g, '').trim().slice(0, 120) : '';
     } else {
-      warnings.push(`unknown setting "${key}" (ignored)`);
+      warnings.push(`unknown setting "${name}" (ignored)`);
     }
   }
   return { cfg, warnings };
@@ -134,4 +144,4 @@ function load() {
   return loadChecked().cfg;
 }
 
-module.exports = { load, loadChecked, normalize, DEFAULTS, CONFIG_PATH };
+module.exports = { load, loadChecked, normalize, DEFAULTS, CONFIG_PATH, NEW_PATH, usingLegacy };

@@ -58,7 +58,7 @@ function debounce(fn, ms) {
 
 Call \`debounce(onSearch, 300)\` and pass the result to the input's \`onChange\`.` },
   { id: 'R19-rhetorical-q', truth: 'silent', raw: `Why did the layout flicker? Because \`useEffect\` runs after paint, so the first frame used the old width. I moved the measurement into \`useLayoutEffect\`, which removes the flicker. Verified in Chrome and Firefox.` },
-  { id: 'R20-urls', truth: 'silent', raw: `Deployed to https://staging.example.com/app?v=2 and confirmed https://staging.example.com/healthz returns 200.` },
+  { id: 'R20-urls', truth: 'silent', raw: `Deployed to http://localhost:3000/app?v=2 and confirmed http://localhost:3000/healthz returns 200.` },
   { id: 'R21-heading-question', truth: 'silent', raw: `## What changed?
 
 - Swapped \`moment\` for \`date-fns\` (bundle is 61 KB smaller)

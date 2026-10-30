@@ -1,8 +1,8 @@
 'use strict';
 
-// `earshot doctor`: answer "why is it silent?" without guessing.
+// `pipe-up doctor`: answer "why is it silent?" without guessing.
 //
-// Earshot's default is to say nothing, so the first question every user has is
+// Pipe Up's default is to say nothing, so the first question every user has is
 // whether it is working. This checks the whole path and shows the last decisions.
 
 const fs = require('fs');
@@ -85,7 +85,8 @@ async function runDoctor(opts = {}) {
   const { cfg, warnings, exists } = config.loadChecked();
   add(OK, `Config: ${config.CONFIG_PATH} ${exists ? '' : '(not created yet, using defaults) '}| mode=${cfg.mode}, smartStyle=${cfg.smartStyle}, label=${cfg.label}, alerts=${cfg.alerts}`);
   warnings.forEach((w) => add(WARN, `Config: ${w}`));
-  if (cfg.mode === 'off') add(WARN, 'mode is "off": responses will not be spoken (alerts still are). Run `earshot mode smart` to turn it back on.');
+  if (config.usingLegacy) add(WARN, `Settings are still in the old file ${config.CONFIG_PATH} (from when this plugin was called earshot). It works, and you can rename it to ${config.NEW_PATH}.`);
+  if (cfg.mode === 'off') add(WARN, 'mode is "off": responses will not be spoken (alerts still are). Run `pipe-up mode smart` to turn it back on.');
 
   try {
     const entries = sessions.readEntries();
@@ -97,10 +98,10 @@ async function runDoctor(opts = {}) {
 
   if (opts.speak) {
     const { speakBlocking } = require('./speak');
-    const r = await speakBlocking('Earshot is working.', cfg);
+    const r = await speakBlocking('Pipe Up is working.', cfg);
     add(r.ok ? OK : BAD, r.ok ? 'Test phrase spoken. Did you hear it?' : `Speaking failed: ${r.error}`);
   } else {
-    add(OK, 'Run `earshot doctor --speak` to hear a test phrase.');
+    add(OK, 'Run `pipe-up doctor --speak` to hear a test phrase.');
   }
 
   console.log(lines.join('\n'));

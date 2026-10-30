@@ -15,8 +15,8 @@ to hear, and which session it came from.*
 ## Setup (before recording)
 
 - Two terminals side by side, each running Claude Code in a different project folder
-  (for example `waypoint` and `billing-api`). Earshot installed, mode `smart`.
-- Run `/earshot:doctor` once off-camera to confirm you can hear it.
+  (for example `waypoint` and `billing-api`). Pipe Up installed, mode `smart`.
+- Run `/pipe-up:doctor` once off-camera to confirm you can hear it.
 
 ## Shot list
 
@@ -46,8 +46,8 @@ hear *"billing api needs permission."* Cut to terminal B showing the prompt.
 **0:23–0:30 — install**
 
 ```
-/plugin marketplace add absep98/earshot
-/plugin install earshot@earshot
+/plugin marketplace add absep98/pipe-up
+/plugin install pipe-up@pipe-up
 ```
 
 End card: the repo URL. Nothing else.

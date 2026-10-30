@@ -35,7 +35,7 @@ function nameFromCwd(cwd) {
  * Work out who is active and what to call each session.
  *
  * Pure function: takes the stored entries and the clock, returns labels.
- * Sessions sharing a folder name get an ordinal ("earshot 1", "earshot 2") in
+ * Sessions sharing a folder name get an ordinal ("pipe-up 1", "pipe-up 2") in
  * the order they were first seen, so two sessions in one project stay distinct.
  *
  * @param {Object<string, {name:string, firstSeen:number, lastSeen:number}>} entries

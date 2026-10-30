@@ -1,18 +1,18 @@
 {
-  "name": "earshot",
-  "displayName": "Earshot",
+  "name": "pipe-up",
+  "displayName": "Pipe Up",
   "description": "Hear what your coding agent did, without reading it. Speaks only when Claude asks you something or gets stuck, and names which session needs you. Fully offline.",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "author": {
     "name": "Abhishek Sharma",
     "url": "https://github.com/absep98"
   },
-  "homepage": "https://github.com/absep98/earshot",
-  "repository": "https://github.com/absep98/earshot",
+  "homepage": "https://github.com/absep98/pipe-up",
+  "repository": "https://github.com/absep98/pipe-up",
   "license": "MIT",
-  "keywords": ["text-to-speech", "accessibility", "notifications", "hooks", "multi-session"],
+  "keywords": ["text-to-speech", "notifications", "hooks", "multi-session", "attention"],
   "icon": "./icon.png",
-  "documentationUrl": "https://github.com/absep98/earshot#readme",
-  "supportUrl": "https://github.com/absep98/earshot/issues",
-  "privacyPolicyUrl": "https://github.com/absep98/earshot/blob/master/PRIVACY.md"
+  "documentationUrl": "https://github.com/absep98/pipe-up#readme",
+  "supportUrl": "https://github.com/absep98/pipe-up/issues",
+  "privacyPolicyUrl": "https://github.com/absep98/pipe-up/blob/master/PRIVACY.md"
 }

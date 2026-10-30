@@ -19,6 +19,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { runDir } = require('./dirs');
+const { env } = require('./env');
 const log = require('./log');
 
 const TMP_DIR = runDir();
@@ -29,7 +30,7 @@ const PENDING_MS = 5000;               // a reserved place, player not started y
 const SPEAK_TIMEOUT_MS = 60 * 1000;    // hard cap on one utterance
 const MAX_WAIT_MS = { narration: 45 * 1000, alert: 90 * 1000 };
 
-const dryRun = () => ['1', 'true'].includes(String(process.env.EARSHOT_DRY_RUN || '').toLowerCase());
+const dryRun = () => ['1', 'true'].includes(String(env('DRY_RUN') || '').toLowerCase());
 
 // ---------------------------------------------------------------------------
 // Housekeeping
@@ -139,18 +140,18 @@ function speakSapi(text, cfg) {
     "$ErrorActionPreference = 'Stop'",
     'Add-Type -AssemblyName System.Speech | Out-Null',
     '$synth = New-Object System.Speech.Synthesis.SpeechSynthesizer',
-    '$synth.Rate = [int]$env:EARSHOT_RATE',
-    'if ($env:EARSHOT_VOICE) { try { $synth.SelectVoice($env:EARSHOT_VOICE) } catch { } }',
-    'if ($env:EARSHOT_TEXT.Trim()) { $synth.Speak($env:EARSHOT_TEXT) }',
+    '$synth.Rate = [int]$env:PIPE_UP_RATE',
+    'if ($env:PIPE_UP_VOICE) { try { $synth.SelectVoice($env:PIPE_UP_VOICE) } catch { } }',
+    'if ($env:PIPE_UP_TEXT.Trim()) { $synth.Speak($env:PIPE_UP_TEXT) }',
     '$synth.Dispose()'
   ].join('; ');
 
   return run('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
     env: {
       ...process.env,
-      EARSHOT_TEXT: clean(text),
-      EARSHOT_VOICE: cfg.voice || '',
-      EARSHOT_RATE: String(Number.isInteger(cfg.rate) ? cfg.rate : 2)
+      PIPE_UP_TEXT: clean(text),
+      PIPE_UP_VOICE: cfg.voice || '',
+      PIPE_UP_RATE: String(Number.isInteger(cfg.rate) ? cfg.rate : 2)
     }
   });
 }
@@ -264,7 +265,7 @@ function cancel(entry) {
   try { fs.unlinkSync(payloadFile(entry.ticket)); } catch (_) { /* ignore */ }
 }
 
-/** Stop everything, queued or playing. Used by `earshot silence`. */
+/** Stop everything, queued or playing. Used by `pipe-up silence`. */
 function stopAll() {
   const active = listActive();
   active.forEach(cancel);
@@ -339,7 +340,7 @@ function enqueue(text, cfg = {}, opts = {}) {
       detached: true,
       stdio: 'ignore',
       windowsHide: true,
-      env: { ...process.env, EARSHOT_TMP_DIR: TMP_DIR }
+      env: { ...process.env, PIPE_UP_TMP_DIR: TMP_DIR }
     });
     child.on('error', () => { /* reported through the missing pid below or the player's own log */ });
     child.unref();

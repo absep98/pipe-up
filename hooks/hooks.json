@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/earshot.js\" stop",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/pipe-up.js\" stop",
             "timeout": 10
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/earshot.js\" notify",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/pipe-up.js\" notify",
             "timeout": 10
           }
         ]

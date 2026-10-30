@@ -1,8 +1,8 @@
 'use strict';
 
-// A small local decision log: why earshot spoke, or why it stayed silent.
+// A small local decision log: why pipe-up spoke, or why it stayed silent.
 //
-// Silence is earshot's default, which makes "why didn't it say anything?" the
+// Silence is pipe-up's default, which makes "why didn't it say anything?" the
 // question every user will ask. Each hook and player run appends one line here.
 // Entries never contain response text, only the decision and its reason.
 
@@ -15,7 +15,7 @@ const MAX_BYTES = 64 * 1024;
 const KEEP_LINES = 150;
 
 function logFile() {
-  return path.join(runDir(), 'earshot.log');
+  return path.join(runDir(), 'pipe-up.log');
 }
 
 /** Append one entry. Never throws: diagnostics must not break a hook. */

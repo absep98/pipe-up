@@ -23,7 +23,7 @@ async function main() {
   try {
     payload = JSON.parse(fs.readFileSync(payloadPath, 'utf8'));
   } catch (_) {
-    // Cancelled before it started (same-session replacement, or `earshot silence`).
+    // Cancelled before it started (same-session replacement, or `pipe-up silence`).
     process.exit(0);
   } finally {
     try { fs.unlinkSync(payloadPath); } catch (_) { /* ignore */ }

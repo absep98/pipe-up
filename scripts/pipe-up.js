@@ -3,21 +3,22 @@
 
 // CLI and hook entry point.
 //
-//   earshot stop        Stop hook          (stdin: hook JSON)
-//   earshot notify      Notification hook  (stdin: hook JSON)
-//   earshot doctor      check the whole path; add --speak to hear a test phrase
-//   earshot mode [m]    show or set the mode: smart, always, off
-//   earshot preview     print what WOULD be spoken, say nothing
-//   earshot say         speak stdin or argv, for testing
-//   earshot sessions    which Claude Code sessions earshot knows about
-//   earshot log [n]     the last n decisions
-//   earshot silence     stop everything being spoken or queued
+//   pipe-up stop        Stop hook          (stdin: hook JSON)
+//   pipe-up notify      Notification hook  (stdin: hook JSON)
+//   pipe-up doctor      check the whole path; add --speak to hear a test phrase
+//   pipe-up mode [m]    show or set the mode: smart, always, off
+//   pipe-up preview     print what WOULD be spoken, say nothing
+//   pipe-up say         speak stdin or argv, for testing
+//   pipe-up sessions    which Claude Code sessions pipe-up knows about
+//   pipe-up log [n]     the last n decisions
+//   pipe-up silence     stop everything being spoken or queued
 
 // Registered before anything else loads: a hook that fails for ANY reason, even a
 // module that cannot load, must exit 0. Exit code 2 would block Claude from stopping.
 const isHook = ['stop', 'notify'].includes(process.argv[2]);
 if (isHook) process.on('uncaughtException', () => process.exit(0));
 
+const { env } = require('../src/env');
 const fs = require('fs');
 
 const { toSpokenText, smartSummary } = require('../src/filter');
@@ -151,7 +152,7 @@ function cmdSay(args) {
   const raw = args.length ? args.join(' ') : readStdin();
   const { text } = toSpokenText(raw, { maxWords: cfg.maxWords, describeCode: cfg.describeCode });
   if (!text) {
-    console.error('earshot: nothing speakable in that input.');
+    console.error('pipe-up: nothing speakable in that input.');
     return 1;
   }
   console.log(text);
@@ -184,7 +185,7 @@ function cmdMode(args) {
     return 0;
   }
   if (!['smart', 'always', 'off'].includes(wanted)) {
-    console.error('earshot: mode must be smart, always or off.');
+    console.error('pipe-up: mode must be smart, always or off.');
     return 1;
   }
 
@@ -193,7 +194,7 @@ function cmdMode(args) {
     try {
       current = JSON.parse(fs.readFileSync(config.CONFIG_PATH, 'utf8'));
     } catch (err) {
-      console.error(`earshot: ${config.CONFIG_PATH} is not valid JSON (${err.message}). Fix it first; I will not overwrite it.`);
+      console.error(`pipe-up: ${config.CONFIG_PATH} is not valid JSON (${err.message}). Fix it first; I will not overwrite it.`);
       return 1;
     }
   }
@@ -226,16 +227,16 @@ function cmdLog(args) {
 }
 
 function usage() {
-  console.log(`earshot: hear what your coding agent did, without reading it.
+  console.log(`pipe-up: hear what your coding agent did, without reading it.
 
-  earshot doctor [--speak]   check everything; why is it silent?
-  earshot mode [smart|always|off]
-  earshot preview [text]     show what would be spoken (reads stdin if no text)
-  earshot say [text]         speak it now, for testing
-  earshot sessions           which Claude Code sessions are active
-  earshot log [n]            the last n decisions
-  earshot silence            stop everything being spoken or queued
-  earshot stop | notify      hook entry points (called by Claude Code)
+  pipe-up doctor [--speak]   check everything; why is it silent?
+  pipe-up mode [smart|always|off]
+  pipe-up preview [text]     show what would be spoken (reads stdin if no text)
+  pipe-up say [text]         speak it now, for testing
+  pipe-up sessions           which Claude Code sessions are active
+  pipe-up log [n]            the last n decisions
+  pipe-up silence            stop everything being spoken or queued
+  pipe-up stop | notify      hook entry points (called by Claude Code)
 
 Config: ${config.CONFIG_PATH}`);
   return 0;
@@ -263,6 +264,6 @@ Promise.resolve()
   .then(main)
   .then((code) => { process.exitCode = isHook ? 0 : code; })
   .catch((err) => {
-    if (process.env.EARSHOT_DEBUG || !isHook) console.error(`earshot: ${err.message}`);
+    if (env('DEBUG') || !isHook) console.error(`pipe-up: ${err.message}`);
     process.exitCode = isHook ? 0 : 1;
   });

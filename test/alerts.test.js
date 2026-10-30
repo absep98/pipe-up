@@ -13,7 +13,7 @@ test('plain wording when no session label is given', () => {
 
 test('the session name replaces "Claude" when there is one', () => {
   assert.equal(alertText('permission_prompt', 'waypoint'), 'waypoint needs permission.');
-  assert.equal(alertText('idle_prompt', 'earshot 2'), 'earshot 2 is waiting for you.');
+  assert.equal(alertText('idle_prompt', 'pipe-up 2'), 'pipe-up 2 is waiting for you.');
   assert.equal(alertText('elicitation_dialog', 'waypoint'), 'waypoint is asking you something.');
   assert.equal(alertText('agent_needs_input', 'waypoint'), 'waypoint needs your input.');
 });
