@@ -10,7 +10,7 @@
       "name": "pipe-up",
       "source": "./",
       "description": "Hear what your coding agent did, without reading it. Speaks only when Claude asks you something or gets stuck, and names which session needs you.",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "author": {
         "name": "Abhishek Sharma"
       }

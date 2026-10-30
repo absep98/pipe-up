@@ -143,13 +143,19 @@ Pipe Up has no network code and reads no credentials.
   `STRIPE_SECRET_KEY` or a URL in them are test data and are never executed.
 - `'pipe-up-' + username` in `src/dirs.js` is a temp-folder name, not a command.
 
-Verify from the repository root. The first command prints nothing:
+Verify from the repository root (each command is plain `grep`):
 
 ```
-grep -rnE "require(['\"](https?|net|dns|tls|dgram|http2)['\"])|fetch(|WebSocket|XMLHttpRequest|Invoke-WebRequest|curl" src scripts hooks commands
-grep -rn "spawn" src scripts
-grep -rn "process.env" src scripts
+grep -rn "require(" src scripts        # every module it loads
+grep -rn "spawn" src scripts           # every process it starts
+grep -rn "process.env" src scripts     # every environment variable it reads
 ```
+
+The first shows only Node built-ins (`fs`, `os`, `path`, `child_process`) and the plugin's
+own files, with no module that can open a network connection. The second shows only
+the local speech commands, `taskkill` and `src/player.js`. The third shows only the
+`PIPE_UP_*` (and old `EARSHOT_*`) settings and the environment handed to those local child
+processes.
 
 ## License
 
